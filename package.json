@@ -6,9 +6,18 @@
   "scripts": {
     "start": "node index.js"
   },
+
+  "bugs":{ 
+    "url" : "https://github.com/frankdai/MP3-Streamer/issues", 
+    "email" : "admin@frankdai.com"
+  },
+  "repository" :{ 
+    "type" : "git", 
+    "url" : "https://github.com/frankdai/MP3-Streamer/"
+  },
   "author": "Frank Dai",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "express": "^4.12.3",
     "id3js": "^1.1.3"
   }
