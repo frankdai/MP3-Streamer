@@ -61,17 +61,16 @@ ul,li {
 	font-size:20px;
 	white-space: nowrap;
 	overflow: hidden;
-
 }
 
 #play .artist {
 	font-size:14px;
 	white-space: nowrap;
-
 }
 
 .controller {
 	padding:2px 0;
+	text-align:center;
 }
 
 .controller, .controller >div {
@@ -81,7 +80,6 @@ ul,li {
 
 .controller >div {
 	font-size: 18px;
-	text-align:center;
 }
 
 .controller >div.play {
@@ -107,6 +105,14 @@ ul,li {
 	margin-bottom: 0
 }
 
+.progress-bar {
+	background-color:#7c36b3
+}
+
 .play-time>span {
 	font-size:12px;
+}
+
+.play-model span {
+	line-height: 25px
 }

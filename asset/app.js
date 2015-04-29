@@ -13,9 +13,9 @@ $.getJSON('/getsongs',function(data){
 			player.play();
 		},
 		updateInfo:function(){
-			var artist=$('#song-info .artist');
-			var title=$('#song-info .title');
-			var album=$('#song-info .album');
+			var artist=$('#song-info .artist span');
+			var title=$('#song-info .title span');
+			var album=$('#song-info .album span');
 			artist.text(this.get('artist'));
 			title.text(this.get('title'));
 			album.text(this.get('album'));
@@ -49,7 +49,7 @@ $.getJSON('/getsongs',function(data){
 		},
 		render:function(){
 			var that=this.$el;
-			lib.models.forEach(function(model){
+			this.collection.forEach(function(model){
 				var songView=new SongView({model:model});
 				that.append(songView.render().$el);
 			});
@@ -72,9 +72,6 @@ $.getJSON('/getsongs',function(data){
 			if (target<0){
 				target=lib.length-1;
 			}
-			if (this.attributes.singleRepeat) {
-				target=current;
-			}
 			return target;
 		},
 		next:function(){
@@ -82,9 +79,6 @@ $.getJSON('/getsongs',function(data){
 			var target=current+1;
 			if (target>=lib.length){
 				target=0
-			}
-			if (this.attributes.singleRepeat) {
-				target=current;
 			}
 			return target;
 		},
@@ -128,6 +122,7 @@ $.getJSON('/getsongs',function(data){
 	streamer.collection=lib;
 	streamer.order=playModel;
 	streamer.control=controlSong;
+	streamer.current=currentSong;
 });
 
 //Put the player manupulation code outside of MVC logic
@@ -138,6 +133,8 @@ $.getJSON('/getsongs',function(data){
 	var currentTime=$('.play-time .current');
 	var prev=$('.controller .prev');
 	var next=$('.controller .next');
+	var model=$('.play-model');
+	var clicks=0;
 	var formatTime=function(seconds) {
 		var min=Math.floor(seconds/60);
 		var sec=Math.floor(seconds%60);
@@ -146,6 +143,7 @@ $.getJSON('/getsongs',function(data){
 		return min+':'+sec;
 	};
 	var timer;
+	var repeatFlag;
 	$('#play .play').on('click',function(){
 		var $this=$(this);
 		var span=$this.find('span');
@@ -170,12 +168,67 @@ $.getJSON('/getsongs',function(data){
 	});
 	player.addEventListener('ended',function(){
 		window.clearInterval(timer);
-		streamer.control('next');
+		if (!repeatFlag) {
+			streamer.control('prev');
+		} else {
+			player.loop=true;
+		}
 	});
 	prev.on('click',function(){
-		streamer.control('prev');
+		if (!repeatFlag) {
+			streamer.control('prev');
+		}
 	});
 	next.on('click',function(){
-		streamer.control('next');
+		if (!repeatFlag) {
+			streamer.control('next');
+		}
 	});
+	model.click(function(event){
+		var $this=$(this);
+		var icon=$this.find('span').eq(0);
+		var text=$this.find('span').eq(1);
+		switch (clicks) {
+			case 0:
+			streamer.order('one');
+			icon.attr('class','glyphicon glyphicon-repeat');
+			player.loop=true;
+			repeatFlag=true;
+			clicks++;
+			break;
+			case 1:
+			streamer.order('random');
+			icon.attr('class','glyphicon glyphicon-random');
+			text.text('Shuffle');
+			player.loop=false;
+			repeatFlag=false;
+			clicks++
+			break;
+			case 2:
+			streamer.order();
+			icon.attr('class','glyphicon glyphicon-refresh');
+			text.text('All')
+			clicks=0
+			break;
+			default:
+			return;
+		}
+	});
+	function scrollText(){
+		var artist=$('#song-info .artist');
+		var title=$('#song-info .title');
+		var artText=artist.find('span');
+		var titleText=title.find('span');
+		if (titleText.width()>title.width()) {
+			title.animate({'text-indent':title.width()-titleText.width()},2000,function(){
+				title.css('text-indent',0);
+			})
+		}
+		if (artText.width()>artist.width()) {
+			artist.animate({'text-indent':artist.width()-artText.width()},2000,function(){
+				artist.css('text-indent',0);
+			})
+		}
+	}
+	window.setInterval(scrollText,4000)
 })(jQuery);
