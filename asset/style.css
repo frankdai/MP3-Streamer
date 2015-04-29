@@ -1,0 +1,112 @@
+ul,li {
+	list-style: none;
+	margin:0;
+	padding:0;
+}
+
+.list .name, .list .info {
+	text-transform: capitalize;
+}
+
+.list .name {
+	font-size: 14px;
+	font-weight:700
+}
+
+.list .info {
+	font-size: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.list .status {
+	width:40px;
+	height:40px;
+	position: absolute;
+	right:0;
+	top:0;
+}
+
+.list {
+	background:#fafafa;
+	height:40px;
+	overflow: hidden;
+	position: relative;
+	border-bottom:1px solid #eaeaea;
+	box-shadow: 1px 1px 1px inset; 
+	padding:2px 5px;
+}
+
+#play {
+	position: fixed;
+	bottom:0;
+	width:100%;
+	height:65px;
+	background-color: rgba(188,188,188,0.9);
+	color:#0f0f0f;
+	text-transform:capitalize;
+}
+
+#song-info .album {
+	display:none
+}
+
+#song-info {
+	border-right:1px solid #444444;
+	padding:5px;
+	height:60
+}
+
+#play .title {
+	font-size:20px;
+	white-space: nowrap;
+	overflow: hidden;
+
+}
+
+#play .artist {
+	font-size:14px;
+	white-space: nowrap;
+
+}
+
+.controller {
+	padding:2px 0;
+}
+
+.controller, .controller >div {
+	padding-left:0;
+	padding-right:0;
+}
+
+.controller >div {
+	font-size: 18px;
+	text-align:center;
+}
+
+.controller >div.play {
+	font-size:30px;
+}
+
+.controller >div.prev {
+	text-align:right;
+	padding:6px 0;
+}
+
+.controller >div.next {
+	text-align:left;
+	padding:6px 0;
+}
+
+#songlist {
+	padding-bottom:65px;
+}
+
+.progress {
+	height:5px;
+	margin-bottom: 0
+}
+
+.play-time>span {
+	font-size:12px;
+}

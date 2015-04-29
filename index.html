@@ -1,30 +1,42 @@
 <html>
 	<head>
 		<title>MP Stream Player</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script src="./asset/jquery.js"></script>
 		<script src="./asset/underscore.js"></script>
 		<script src="./asset/backbone.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="./asset/style.css">
 	</head>
 	<body>
 		<section id="songlist">
 			
 		</section>
+
 		<section id="play">
-			<div id="song-info">
+			<div class="progress">
+  				<div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 1%">
+  				</div>
+			</div>
+			<div id="song-info" class="col-xs-7">
 				<div class="title"></div>
 				<div class="artist"></div>
 				<div class="album"></div>
 			</div>
-			<div class="play">Play</div>
-			<div class="prev">Previous</div>
-			<div class="next">Next</div>
-			<select>
-				<option>All</option>
-				<option>One</option>
-				<option>Random</option>
-			</select>
+			<div class="controller col-xs-5">
+				<div class="play-model col-xs-4"></div>
+				<div class="play-time col-xs-8">
+					<span class="current">00:00</span>
+					<span>/</span>
+					<span class="duration">00:00</span>
+				</div>
+				<div class="prev col-xs-3"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></div>
+				<div class="play col-xs-6"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></div>
+				<div class="next col-xs-3"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></div>
+			</div>
 		</section>
-		<audio id="player" controls src=""></audio>
+		<audio id="player" src=""></audio>
 		<script src="./asset/app.js"></script>
 	</body>
 </html>

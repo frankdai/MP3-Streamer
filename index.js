@@ -15,17 +15,15 @@ fs.readdir('./songs',function(err,files){
 	if (err) {throw err};
 	files.forEach(function(file){
 		id3({ file:"./songs/"+file, type: id3.OPEN_LOCAL }, function(err, tags) {
-      try {
-   			var song={'artist':tags.artist||'unknown','title':tags.title||'unknown','album':tags.album||'unknown','file':"./songs/"+file};
-   			mp3.push(song);
-      }
-      catch (e) {
-        console.log(err)
-      }
+        if (err) {return;}
+        else {
+     			var song={'artist':tags.artist||'unknown','title':tags.title||'unknown','album':tags.album||'unknown','file':"./songs/"+file};
+     			mp3.push(song);
+        }
 		});
 	});
 });
-var server = app.listen(3000, '127.0.0.1',function () {
+var server = app.listen(3000, function () {
   var host = server.address().address;
   var port = server.address().port;
   console.log('MP3 Streamer listening at http://%s:%s', host, port);
