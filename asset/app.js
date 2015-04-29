@@ -118,6 +118,27 @@ $.getJSON('/getsongs',function(data){
 			currentSong.set({'singleRepeat':false,'random':false});
 		}
 	}
+	//artist MVC
+	var allArtist=_.uniq(lib.pluck('artist'));
+	var ArtistModel=Backbone.Model.extend();
+	//var artistModel=new ArtistModel();
+	var ArtistCollection=Backbone.Collection.extend();
+	var artistCollection=new ArtistCollection();
+	allArtist.forEach(function(artist){
+		var artistModel=new ArtistModel({
+			name:artist,	
+			album:lib.where({artist:artist})
+		});
+		artistCollection.add(artistModel);
+	})
+	var ArtistView=Backbone.View.extend({
+		tagName:'ul',
+		class:'artist-list',
+		render:function(){
+			this.$el.append('<li></li>')
+		}
+	});
+	streamer.art=artistCollection;
 	//export function for debug purpose
 	streamer.collection=lib;
 	streamer.order=playModel;
