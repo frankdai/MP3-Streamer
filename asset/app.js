@@ -147,20 +147,32 @@ $.getJSON('/getsongs',function(data){
 	//var artistModel=new ArtistModel();
 	var ArtistCollection=Backbone.Collection.extend();
 	var artistCollection=new ArtistCollection();
+	artistCollection.comparator='name';
 	allArtist.forEach(function(artist){
 		var artistModel=new ArtistModel({
 			name:artist,	
 			album:lib.where({artist:artist})
 		});
+		
 		artistCollection.add(artistModel);
 	})
 	var ArtistView=Backbone.View.extend({
 		tagName:'ul',
-		class:'artist-list',
+		className:'artist-list',
 		render:function(){
-			this.$el.append('<li></li>')
+			var html='';
+			artistCollection.each(function(model){
+				html+='<li>'+model.get('name')+'</li>'
+			})
+			this.$el.append(html);
+			return this;
+		},
+		initialize:function(){
+			this.render();
+			$('#artist').append(this.el);
 		}
 	});
+	var artistView=new ArtistView();
 	streamer.art=artistCollection;
 	//export function for debug purpose
 	streamer.collection=lib;
@@ -274,3 +286,22 @@ $.getJSON('/getsongs',function(data){
 	}
 	window.setInterval(scrollText,4000)
 })(jQuery);
+
+//here goes misc controls for non-essential
+(function($){
+	//nav 
+	var nav=$('nav.nav ul li');
+	var wrapper=$('.wrapper');
+	var width=$(window).width();
+	var height=$(window).height();
+	var sections=$('.wrapper>section');
+	sections.css('width',width).css('height',height-90);
+	wrapper.css('height',height-90);
+	nav.each(function(index){
+		$(this).click(function(){
+			wrapper.css({
+				'transform':'translateX(-'+width*index+'px)'});
+			nav.removeClass('active').eq(index).addClass('active');
+		})
+	});
+})(jQuery)
