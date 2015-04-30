@@ -42,7 +42,7 @@ $.getJSON('/getsongs',function(data){
 	  	},
 	  	play:function(){
 	  		var number=lib.indexOf(this.model);
-	  		currentSong.set({'current':number,'playing':true});
+	  		currentSong.set({'current':number,'playing':true,'list':lib.models});
 	  	},
 	  	template: _.template('<div class="name"><%= title %></div><div class="info"><%= artist %> - <%= album %></div><div class="status"></div>'),
 	  	render: function() {
@@ -71,7 +71,8 @@ $.getJSON('/getsongs',function(data){
 		defaults:{
 			current:0,
 			random:false,
-			playing:true
+			playing:true,
+			list:lib.models
 		},
 		initialize:function(){
 			this.play();
@@ -80,26 +81,26 @@ $.getJSON('/getsongs',function(data){
 			var current=this.get('current');
 			var target=current-1;
 			if (target<0){
-				target=lib.length-1;
+				target=this.get('list').length-1;
 			}
 			return target;
 		},
 		next:function(){
-			var current=this.get('current');
+			var current=this.get ('current');
 			var target=current+1;
-			if (target>=lib.length){
+			if (target>=this.get('list').length){
 				target=0
 			}
 			return target;
 		},
 		play:function(){
-			var model=lib.models[this.get('current')];
+			var model=this.get('list')[this.get('current')];
 			this.set('playing',true);
 			model.play();
 			model.updateInfo();
 		},
 		pause:function(){
-			var model=lib.models[this.get('current')];
+			var model=this.get('list')[this.get('current')];
 			this.set('playing',false);
 			model.pause();
 		}
@@ -115,6 +116,10 @@ $.getJSON('/getsongs',function(data){
 		} else {
 			this.pause()
 		}
+	},currentSong);
+	currentSong.on('change:list',function(){
+		this.set('current',0);
+		this.play();
 	},currentSong);
 	var controlSong=function(type){
 		var number;
@@ -144,7 +149,22 @@ $.getJSON('/getsongs',function(data){
 	//artist MVC
 	var allArtist=_.uniq(lib.pluck('artist'));
 	var ArtistModel=Backbone.Model.extend();
-	//var artistModel=new ArtistModel();
+	var ArtistView = Backbone.View.extend({
+		tagName: "li",
+		className:'list',
+
+	  	events:{
+	  		'click':'showSongs'
+	  	},
+	  	showSongs:function(){
+	  		currentSong.set('list',this.model.get('album'))
+	  	},
+
+	  	render: function() {
+	    	this.$el.text(this.model.get('name'));
+	    	return this;
+	  	}
+	}); 
 	var ArtistCollection=Backbone.Collection.extend();
 	var artistCollection=new ArtistCollection();
 	artistCollection.comparator='name';
@@ -153,18 +173,17 @@ $.getJSON('/getsongs',function(data){
 			name:artist,	
 			album:lib.where({artist:artist})
 		});
-		
 		artistCollection.add(artistModel);
 	})
-	var ArtistView=Backbone.View.extend({
+	var ArtistCollectionView=Backbone.View.extend({
 		tagName:'ul',
 		className:'artist-list',
 		render:function(){
-			var html='';
+			var that=this.$el
 			artistCollection.each(function(model){
-				html+='<li>'+model.get('name')+'</li>'
+				var artistView=new ArtistView({model:model});
+				that.append(artistView.render().$el);
 			})
-			this.$el.append(html);
 			return this;
 		},
 		initialize:function(){
@@ -172,7 +191,7 @@ $.getJSON('/getsongs',function(data){
 			$('#artist').append(this.el);
 		}
 	});
-	var artistView=new ArtistView();
+	var artistView=new ArtistCollectionView();
 	streamer.art=artistCollection;
 	//export function for debug purpose
 	streamer.collection=lib;
