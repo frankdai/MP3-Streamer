@@ -9,8 +9,17 @@ $.getJSON('/getsongs',function(data){
 	//Song,Library MVC
 	var Song=Backbone.Model.extend({
 		play:function(){
-			player.src=this.get('file');
+			var span=$('#play .play span')
+			span.removeClass('glyphicon-play').addClass('glyphicon-pause');
+			if (player.getAttribute('src')!==this.get('file')) {
+				player.src=this.get('file')
+			}
 			player.play();
+		},
+		pause:function(){
+			var span=$('#play .play span')
+			span.addClass('glyphicon-play').removeClass('glyphicon-pause');
+			player.pause();
 		},
 		updateInfo:function(){
 			var artist=$('#song-info .artist span');
@@ -33,7 +42,7 @@ $.getJSON('/getsongs',function(data){
 	  	},
 	  	play:function(){
 	  		var number=lib.indexOf(this.model);
-	  		currentSong.set('current',number);
+	  		currentSong.set({'current':number,'playing':true});
 	  	},
 	  	template: _.template('<div class="name"><%= title %></div><div class="info"><%= artist %> - <%= album %></div><div class="status"></div>'),
 	  	render: function() {
@@ -62,6 +71,7 @@ $.getJSON('/getsongs',function(data){
 		defaults:{
 			current:0,
 			random:false,
+			playing:true
 		},
 		initialize:function(){
 			this.play();
@@ -84,14 +94,27 @@ $.getJSON('/getsongs',function(data){
 		},
 		play:function(){
 			var model=lib.models[this.get('current')];
+			this.set('playing',true);
 			model.play();
 			model.updateInfo();
+		},
+		pause:function(){
+			var model=lib.models[this.get('current')];
+			this.set('playing',false);
+			model.pause();
 		}
 	});
 	var currentSong=new CurrentSong();
 	currentSong.on('change:current',function(){
-		var current=this.get('current');
 		this.play();
+	},currentSong);
+	currentSong.on('change:playing',function(){
+		var playing=this.get('playing');
+		if (playing) {
+			this.play()
+		} else {
+			this.pause()
+		}
 	},currentSong);
 	var controlSong=function(type){
 		var number;
@@ -154,6 +177,7 @@ $.getJSON('/getsongs',function(data){
 	var currentTime=$('.play-time .current');
 	var prev=$('.controller .prev');
 	var next=$('.controller .next');
+	var play=$('.controller .play');
 	var model=$('.play-model');
 	var clicks=0;
 	var formatTime=function(seconds) {
@@ -165,18 +189,6 @@ $.getJSON('/getsongs',function(data){
 	};
 	var timer;
 	var repeatFlag;
-	$('#play .play').on('click',function(){
-		var $this=$(this);
-		var span=$this.find('span');
-		$this.toggleClass('paused')
-		if ($this.hasClass('paused')){
-			span.addClass('glyphicon-play').removeClass('glyphicon-pause');
-			player.pause();
-		} else {
-			span.removeClass('glyphicon-play').addClass('glyphicon-pause');
-			player.play();
-		}
-	});
 	player.addEventListener('play',function(){
 		timer=window.setInterval(function(){
 			var percent=Math.ceil(player.currentTime/player.duration*100)+'%';
@@ -205,6 +217,15 @@ $.getJSON('/getsongs',function(data){
 			streamer.control('next');
 		}
 	});
+	play.on('click',function(){
+		var $this=$(this);
+		$this.toggleClass('paused');
+		if ($this.hasClass('paused')){
+			streamer.current.set('playing',false);
+		} else {
+			streamer.current.set('playing',true);
+		}
+	})
 	model.click(function(event){
 		var $this=$(this);
 		var icon=$this.find('span').eq(0);
