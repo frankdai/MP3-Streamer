@@ -31,7 +31,8 @@ nav.nav ul li {
 	float:left;
 	height:25px;
 	width:33.33333333333333%;
-	text-align: center
+	text-align: center;
+	line-height: 25px;
 }
 
 nav.nav ul li.active {
