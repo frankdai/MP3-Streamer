@@ -17,6 +17,9 @@ fs.readdir('./songs',function(err,files){
 		id3({ file:"./songs/"+file, type: id3.OPEN_LOCAL }, function(err, tags) {
         if (err) {return;}
         else {
+          typeof tags.artist=='string'?tags.artist=tags.artist.toLowerCase():tags.artist='unknown';
+          typeof tags.title=='string'?tags.title=tags.title.toLowerCase():tags.title='unknown';
+          typeof tags.album=='string'?tags.album=tags.album.toLowerCase():tags.album='unknown';
      			var song={'artist':tags.artist||'unknown','title':tags.title||'unknown','album':tags.album||'unknown','file':"./songs/"+file};
      			mp3.push(song);
         }

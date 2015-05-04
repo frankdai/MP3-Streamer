@@ -163,12 +163,14 @@ $.getJSON('/getsongs',function(data){
 	});
 	var allArtist=function(collection,wrapper) {
 		var all=_.uniq(collection.pluck('artist'));
+		var ul=$('<ul class="artist-list"></ul>');
 		all=_.sortBy(all,function(num){return num});
 		all.forEach(function(item){
 			var artistModel=new ArtistModel({'name':item});
-			var artistView=new ArtistView({model:artistModel})
-			wrapper.append(artistView.render().el)
+			var artistView=new ArtistView({model:artistModel});
+			ul.append(artistView.render().el)
 		});
+		wrapper.html('').append(ul);
 	};
 	allArtist(lib,$('#artist'));
 	$('#songlist .list').each(function(index){
