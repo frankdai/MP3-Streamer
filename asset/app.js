@@ -154,6 +154,7 @@ $.getJSON('/getsongs',function(data){
 		},
 		showAlbum:function(){
 			var name=this.model.get('name');
+			router.nav
 			var songs=lib.filter(function(model){
 				return model.get('artist')===name
 			});
@@ -177,7 +178,6 @@ $.getJSON('/getsongs',function(data){
 		});
 		wrapper.html('').append(ul);
 	};
-	//allArtist(lib,$('#artist'));
 	//album MVC
 	var AlbumModel=Backbone.Model.extend();
 	var AlbumView=Backbone.View.extend({
@@ -187,12 +187,11 @@ $.getJSON('/getsongs',function(data){
 			'click':'showSongs'
 		},
 		showSongs:function(){
-			var name=this.model.get('index');
-			window.location.hash='#album/'+name;
-			//router.navigate('album/'+name);
+			var name=this.model.get('model').cid;
+			window.location.hash+='/'+name;
 		},
 		render:function(){
-			this.$el.text(this.model.get('name')+'-'+this.model.get('artist'));
+			this.$el.text(this.model.get('name')+'-'+this.model.get('model').get('artist'));
 			return this;
 		}
 	});
@@ -200,27 +199,24 @@ $.getJSON('/getsongs',function(data){
 		var all=_.uniq(collection.pluck('album'));
 		var ul=$('<ul class="album-list"></ul>');
 		all=_.sortBy(all,function(num){return num});
-		var index=0;
 		all.forEach(function(item){
 			var albumModel=new AlbumModel({
 				'name':item,
-				'index':index,
-				'artist':collection.findWhere({'album':item}).get('artist'),
-				'album':collection.findWhere({'album':item}).get('album')
+				'model':collection.findWhere({'album':item}),
 			});
 			var albumView=new AlbumView({model:albumModel});
 			ul.append(albumView.render().el);
-			index++;
 		});
 		wrapper.html('').append(ul);
 	};
-	//allAlbum(lib,$('#album'));
 	//router
 	var Router=Backbone.Router.extend({
 		routes: {
 			'album':'album',
 			'artist':'artist',
-			'album/:index':'renderAlbum'
+			'album/:cid':'renderAlbum',
+			'artist/:cid''renderArtist',
+
 		},
 		artist:function(){
 			allArtist(lib,$('#artist'));
@@ -228,14 +224,17 @@ $.getJSON('/getsongs',function(data){
 		album:function(){
 			allAlbum(lib,$('#album'));
 		},
-		renderAlbum:function(index){
-			var album=lib.models[index].get('album');
+		renderAlbum:function(cid){
+			var album=lib.get(cid);
 			var songs=lib.filter(function(model){
-				return model==lib.models[index];
+				return model.get('album')==album.get('album')&&model.get('artist')==album.get('artist');
 			})
 			var list=new Backbone.Collection(songs);
 			musicLibrary(list,$('#album'));
-		}
+		},
+		renderArtist:function(){
+
+		},
 	});
 	var router=new Router();
 	Backbone.history.start();
