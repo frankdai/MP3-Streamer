@@ -177,7 +177,7 @@ $.getJSON('/getsongs',function(data){
 		});
 		wrapper.html('').append(ul);
 	};
-	allArtist(lib,$('#artist'));
+	//allArtist(lib,$('#artist'));
 	//album MVC
 	var AlbumModel=Backbone.Model.extend();
 	var AlbumView=Backbone.View.extend({
@@ -187,12 +187,9 @@ $.getJSON('/getsongs',function(data){
 			'click':'showSongs'
 		},
 		showSongs:function(){
-			var name=this.model.get('name');
-			var songs=lib.filter(function(model){
-				return model.get('album')===name
-			});
-			var list=new Backbone.Collection(songs);
-			musicLibrary(list,this.$el.parent().parent());
+			var name=this.model.get('index');
+			window.location.hash='#album/'+name;
+			//router.navigate('album/'+name);
 		},
 		render:function(){
 			this.$el.text(this.model.get('name')+'-'+this.model.get('artist'));
@@ -203,24 +200,54 @@ $.getJSON('/getsongs',function(data){
 		var all=_.uniq(collection.pluck('album'));
 		var ul=$('<ul class="album-list"></ul>');
 		all=_.sortBy(all,function(num){return num});
+		var index=0;
 		all.forEach(function(item){
 			var albumModel=new AlbumModel({
 				'name':item,
-				'artist':collection.findWhere({'album':item}).get('artist')
+				'index':index,
+				'artist':collection.findWhere({'album':item}).get('artist'),
+				'album':collection.findWhere({'album':item}).get('album')
 			});
 			var albumView=new AlbumView({model:albumModel});
 			ul.append(albumView.render().el);
+			index++;
 		});
 		wrapper.html('').append(ul);
 	};
-	allAlbum(lib,$('#album'));
-	
+	//allAlbum(lib,$('#album'));
+	//router
+	var Router=Backbone.Router.extend({
+		routes: {
+			'album':'album',
+			'artist':'artist',
+			'album/:index':'renderAlbum'
+		},
+		artist:function(){
+			allArtist(lib,$('#artist'));
+		},
+		album:function(){
+			allAlbum(lib,$('#album'));
+		},
+		renderAlbum:function(index){
+			var album=lib.models[index].get('album');
+			console.log(album);
+			var songs=lib.find({'album':album})
+			//console.log(arr);
+			//var songs=lib.find()
+			console.log(songs);
+			var list=new Backbone.Collection(songs);
+			musicLibrary(list,$('#album'));
+		}
+	});
+	var router=new Router();
+	Backbone.history.start();
 
 	//export function for debug purpose
 	streamer.collection=lib;
 	streamer.order=playModel;
 	streamer.control=controlSong;
 	streamer.current=currentSong;
+	streamer.router=router;
 });
 
 //Put the player manupulation code outside of MVC logic
