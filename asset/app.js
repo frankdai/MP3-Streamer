@@ -153,14 +153,8 @@ $.getJSON('/getsongs',function(data){
 			'click':'showAlbum'
 		},
 		showAlbum:function(){
-			var name=this.model.get('name');
-			router.nav
-			var songs=lib.filter(function(model){
-				return model.get('artist')===name
-			});
-			var list=new Backbone.Collection();
-			list.add(songs);
-			allAlbum(list,$('#artist'));
+			var name=this.model.get('model').cid;
+			router.navigate('artist/'+name,{trigger:true});
 		},
 		render:function(){
 			this.$el.text(this.model.get('name'));
@@ -172,7 +166,10 @@ $.getJSON('/getsongs',function(data){
 		var ul=$('<ul class="artist-list"></ul>');
 		all=_.sortBy(all,function(num){return num});
 		all.forEach(function(item){
-			var artistModel=new ArtistModel({'name':item});
+			var artistModel=new ArtistModel({
+				'name':item,
+				'model':collection.findWhere({'artist':item}),
+			});
 			var artistView=new ArtistView({model:artistModel});
 			ul.append(artistView.render().el)
 		});
@@ -215,8 +212,8 @@ $.getJSON('/getsongs',function(data){
 			'album':'album',
 			'artist':'artist',
 			'album/:cid':'renderAlbum',
-			'artist/:cid''renderArtist',
-
+			'artist/:cid':'renderArtist',
+			'artist/:firstid/:secondid':'renderList'
 		},
 		artist:function(){
 			allArtist(lib,$('#artist'));
@@ -232,9 +229,22 @@ $.getJSON('/getsongs',function(data){
 			var list=new Backbone.Collection(songs);
 			musicLibrary(list,$('#album'));
 		},
-		renderArtist:function(){
-
+		renderArtist:function(cid){
+			var artist=lib.get(cid);
+			var songs=lib.filter(function(model){
+				return model.get('artist')==artist.get('artist');
+			})
+			var list=new Backbone.Collection(songs);
+			allAlbum(list,$('#artist'));
 		},
+		renderList:function(firstid,secondid){
+			var album=lib.get(firstid);
+			var songs=lib.filter(function(model){
+				return model.get('album')==album.get('album')&&model.get('artist')==album.get('artist');
+			})
+			var list=new Backbone.Collection(songs);
+			musicLibrary(list,$('#artist'));
+		}
 	});
 	var router=new Router();
 	Backbone.history.start();
