@@ -230,11 +230,9 @@ $.getJSON('/getsongs',function(data){
 		},
 		renderAlbum:function(index){
 			var album=lib.models[index].get('album');
-			console.log(album);
-			var songs=lib.find({'album':album})
-			//console.log(arr);
-			//var songs=lib.find()
-			console.log(songs);
+			var songs=lib.filter(function(model){
+				return model==lib.models[index];
+			})
 			var list=new Backbone.Collection(songs);
 			musicLibrary(list,$('#album'));
 		}
