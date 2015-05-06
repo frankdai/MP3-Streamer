@@ -153,13 +153,8 @@ $.getJSON('/getsongs',function(data){
 			'click':'showAlbum'
 		},
 		showAlbum:function(){
-			var name=this.model.get('name');
-			var songs=lib.filter(function(model){
-				return model.get('artist')===name
-			});
-			var list=new Backbone.Collection();
-			list.add(songs);
-			allAlbum(list,$('#artist'));
+			var name=this.model.get('model').cid;
+			router.navigate('artist/'+name,{trigger:true});
 		},
 		render:function(){
 			this.$el.text(this.model.get('name'));
@@ -171,13 +166,15 @@ $.getJSON('/getsongs',function(data){
 		var ul=$('<ul class="artist-list"></ul>');
 		all=_.sortBy(all,function(num){return num});
 		all.forEach(function(item){
-			var artistModel=new ArtistModel({'name':item});
+			var artistModel=new ArtistModel({
+				'name':item,
+				'model':collection.findWhere({'artist':item}),
+			});
 			var artistView=new ArtistView({model:artistModel});
 			ul.append(artistView.render().el)
 		});
 		wrapper.html('').append(ul);
 	};
-	allArtist(lib,$('#artist'));
 	//album MVC
 	var AlbumModel=Backbone.Model.extend();
 	var AlbumView=Backbone.View.extend({
@@ -187,15 +184,11 @@ $.getJSON('/getsongs',function(data){
 			'click':'showSongs'
 		},
 		showSongs:function(){
-			var name=this.model.get('name');
-			var songs=lib.filter(function(model){
-				return model.get('album')===name
-			});
-			var list=new Backbone.Collection(songs);
-			musicLibrary(list,this.$el.parent().parent());
+			var name=this.model.get('model').cid;
+			window.location.hash+='/'+name;
 		},
 		render:function(){
-			this.$el.text(this.model.get('name')+'-'+this.model.get('artist'));
+			this.$el.text(this.model.get('name')+'-'+this.model.get('model').get('artist'));
 			return this;
 		}
 	});
@@ -206,21 +199,62 @@ $.getJSON('/getsongs',function(data){
 		all.forEach(function(item){
 			var albumModel=new AlbumModel({
 				'name':item,
-				'artist':collection.findWhere({'album':item}).get('artist')
+				'model':collection.findWhere({'album':item}),
 			});
 			var albumView=new AlbumView({model:albumModel});
 			ul.append(albumView.render().el);
 		});
 		wrapper.html('').append(ul);
 	};
-	allAlbum(lib,$('#album'));
-	
+	//router
+	var Router=Backbone.Router.extend({
+		routes: {
+			'album':'album',
+			'artist':'artist',
+			'album/:cid':'renderAlbum',
+			'artist/:cid':'renderArtist',
+			'artist/:firstid/:secondid':'renderList'
+		},
+		artist:function(){
+			allArtist(lib,$('#artist'));
+		},
+		album:function(){
+			allAlbum(lib,$('#album'));
+		},
+		renderAlbum:function(cid){
+			var album=lib.get(cid);
+			var songs=lib.filter(function(model){
+				return model.get('album')==album.get('album')&&model.get('artist')==album.get('artist');
+			})
+			var list=new Backbone.Collection(songs);
+			musicLibrary(list,$('#album'));
+		},
+		renderArtist:function(cid){
+			var artist=lib.get(cid);
+			var songs=lib.filter(function(model){
+				return model.get('artist')==artist.get('artist');
+			})
+			var list=new Backbone.Collection(songs);
+			allAlbum(list,$('#artist'));
+		},
+		renderList:function(firstid,secondid){
+			var album=lib.get(firstid);
+			var songs=lib.filter(function(model){
+				return model.get('album')==album.get('album')&&model.get('artist')==album.get('artist');
+			})
+			var list=new Backbone.Collection(songs);
+			musicLibrary(list,$('#artist'));
+		}
+	});
+	var router=new Router();
+	Backbone.history.start();
 
 	//export function for debug purpose
 	streamer.collection=lib;
 	streamer.order=playModel;
 	streamer.control=controlSong;
 	streamer.current=currentSong;
+	streamer.router=router;
 });
 
 //Put the player manupulation code outside of MVC logic

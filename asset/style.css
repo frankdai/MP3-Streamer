@@ -39,6 +39,11 @@ nav.nav ul li.active {
 	color:#eee;
 }
 
+nav.nav ul li a {
+	display:block;
+	color:inherit;
+}
+
 .list .name, .list .info {
 	text-transform: capitalize;
 }
