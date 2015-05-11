@@ -248,7 +248,7 @@ $.getJSON('/getsongs',function(data){
 });
 
 //Put the player manupulation code outside of MVC logic
-(function($){
+window.addEventListener('load',function(){
 	var player=document.getElementById('player');
 	var progress=$('.progress .progress-bar');
 	var totalTime=$('.play-time .duration');
@@ -351,16 +351,11 @@ $.getJSON('/getsongs',function(data){
 		}
 	}
 	window.setInterval(scrollText,4000)
-})(jQuery);
-
-
 //here goes misc controls for non-essential
-(function($){
-	//nav 
 	var nav=$('nav.nav ul li');
 	nav.each(function(index){
 		$(this).click(function(){
 			nav.removeClass('active').eq(index).addClass('active');
 		})
 	});
-})(jQuery)
+})
