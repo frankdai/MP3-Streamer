@@ -4,18 +4,11 @@ ul,li {
 	padding:0;
 }
 
-.wrapper {
-	width:10000px;
-	position: fixed;
-	top:25px;
-	left:0;
-	overflow: hidden;
-	transition:all 0.4s ease-in-out;
+a:hover {
+	text-decoration:none
 }
-
-.wrapper>section {
-	float:left;
-	overflow-y: scroll
+.wrapper {
+	padding:25px 0 65px 0;
 }
 
 nav.nav {
@@ -72,14 +65,19 @@ nav.nav ul li a {
 	height:40px;
 	overflow: hidden;
 	position: relative;
-	border-bottom:1px solid #eaeaea;
-	box-shadow: 1px 1px 1px inset; 
+	border-bottom:1px solid #dadada;
 	padding:2px 5px;
 }
-.album-list .list, .artist-list .list {
-	font-size: 18px;
-  	line-height: 40px;
-  	text-transform: capitalize;
+.album-list .list .name {
+	min-height:20px;
+	white-space:nowrap;
+}
+
+.artist-list .list {
+	text-transform: capitalize;
+	font-size:14px;
+	font-weight: 700;
+	line-height:35px;
 }
 
 #play {
