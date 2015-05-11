@@ -334,23 +334,19 @@ window.addEventListener('load',function(){
 			return;
 		}
 	});
-	function scrollText(){
-		var artist=$('#song-info .artist');
+	var scrollText=function(){
 		var title=$('#song-info .title');
-		var artText=artist.find('span');
-		var titleText=title.find('span');
-		if (titleText.width()>title.width()) {
-			title.animate({'text-indent':title.width()-titleText.width()},2000,function(){
-				title.css('text-indent',0);
-			})
+		var span=title.find('span');
+		var reset=function(){
+			title.css({'text-indent':0,'transition':'none'});
+			title.off('transitionend',reset);
 		}
-		if (artText.width()>artist.width()) {
-			artist.animate({'text-indent':artist.width()-artText.width()},2000,function(){
-				artist.css('text-indent',0);
-			})
+		if (span.width()>title.width()) {
+			title.css({'text-indent':0-(span.width()-title.width())*1.3+'px','transition':'all 2s linear'});
 		}
+		title.on('transitionend',reset)
 	}
-	window.setInterval(scrollText,4000)
+	window.setInterval(scrollText,4000);
 //here goes misc controls for non-essential
 	var nav=$('nav.nav ul li');
 	nav.each(function(index){
