@@ -2,7 +2,7 @@
 
 Mobile Web Music Player Made of HTML5, CSS3, Bootstrap, Backbone.js in frontend and Node.js/Express.js in the backend.
 
-Checkout the demo: [107.191.53.111:3000](http://107.191.53.111t:3000)
+Checkout the demo: [107.191.53.111:3000](http://107.191.53.111:3000)
 
 To use, first clone this respoitory,
 
